@@ -39,6 +39,7 @@ function DashboardContent() {
       <DashboardErrorFallback
         message="No active trip found for today. Start a trip in the Planner to see your mission."
         onRetry={() => void queryClient.invalidateQueries()}
+        action={{ label: 'Go to Planner', to: '/planner' }}
       />
     )
   }

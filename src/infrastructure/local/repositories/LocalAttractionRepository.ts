@@ -50,6 +50,12 @@ export class LocalAttractionRepository implements AttractionRepository {
     return attractions.map((a) => AttractionSchema.parse(a))
   }
 
+  async getAllAttractions(): Promise<Attraction[]> {
+    await this.db.ready
+    const attractions = await this.db.attractions.toArray()
+    return attractions.map((a) => AttractionSchema.parse(a))
+  }
+
   /** Starts the periodic wait-time/LL-availability jitter. No-op if already running. */
   startLiveSimulation(): void {
     if (this.intervalId != null) return

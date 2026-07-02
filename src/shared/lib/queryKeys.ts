@@ -9,6 +9,7 @@ export const queryKeys = {
   },
   attractions: {
     live: (park: ParkId) => ['attractions', 'live', park] as const,
+    all: () => ['attractions', 'all'] as const,
   },
   achievements: {
     all: () => ['achievements', 'all'] as const,

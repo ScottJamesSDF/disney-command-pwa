@@ -53,6 +53,10 @@ Dining, Family management, Achievements, Statistics, Checklists) is **out of sco
 purpose** — the project ships one real, fully-working feature at a time rather than many
 half-built screens. See the roadmap below for build order.
 
+**Since Phase 1**: a manual Trip/Family editor (`src/features/planner/`, reachable via the
+"Planner" nav entry) now lets you create/edit your own trip and family, so the Dashboard reads
+real user-entered data instead of only the fixed demo trip/family.
+
 ## Documentation
 
 - [Architecture](./docs/ARCHITECTURE.md) — layering, dependency rule, SOLID mapping, local-first rationale
@@ -66,20 +70,25 @@ half-built screens. See the roadmap below for build order.
 
 ## Roadmap (Phase 2+)
 
-1. **Trip Planner / AI itinerary generator** — produces the `Trip`/`ParkDay` JSON the Dashboard
-   already knows how to consume; the most load-bearing next step, since Phase 1 only ships a
-   fixed demo trip.
-2. **Lightning Lane Assistant** — booking flow that sets `lightningLaneReturnTime` on live attractions.
-3. **Dining** — CRUD for reservations, feeding the dining-imminent waterfall step.
-4. **Family management** — CRUD for members, manual energy/hydration overrides.
-5. **Timeline** — historical/planned view of the day.
-6. **Maps** — canvas visualization over the already-modeled `mapX`/`mapY` attraction coordinates.
-7. **Galaxy's Edge** — special-interest content layer.
-8. **Achievements** — needs real completion events from 1–4 to have meaningful triggers.
-9. **Statistics** — aggregates across the above.
-10. **Checklists** — packing/prep lists.
-11. **Supabase backend swap** — implement `Supabase*Repository` classes against
+1. ~~**Trip/Family data model editor**~~ — **done.** Manual Trip + Family editor
+   (`src/features/planner/`) lets users create/edit their own trip and family so every other
+   feature below has real data to work with instead of the fixed demo trip/family.
+2. **AI itinerary generation** — an AI-assisted Planner that generates the same `Trip`/`ParkDay`
+   JSON the manual editor (and the Dashboard's Operations Engine) already consume, replacing hand
+   entry with AI-assisted suggestions. See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)'s
+   "Operations Engine vs. Planner" section for why this requires zero Operations Engine changes.
+3. **Lightning Lane Assistant** — booking flow that sets `lightningLaneReturnTime` on live attractions.
+4. **Dining** — CRUD for reservations, feeding the dining-imminent waterfall step.
+5. **Family management enhancements** — richer member management beyond the base editor (e.g.
+   in-the-moment energy/hydration overrides surfaced directly on the Dashboard).
+6. **Timeline** — historical/planned view of the day.
+7. **Maps** — canvas visualization over the already-modeled `mapX`/`mapY` attraction coordinates.
+8. **Galaxy's Edge** — special-interest content layer.
+9. **Achievements** — needs real completion events from 2–5 to have meaningful triggers.
+10. **Statistics** — aggregates across the above.
+11. **Checklists** — packing/prep lists.
+12. **Supabase backend swap** — implement `Supabase*Repository` classes against
     [docs/DATA_MODEL.md](./docs/DATA_MODEL.md); a `container.ts`-only change per the architecture
     guarantee established in Phase 1.
-12. **True server Web Push** (VAPID + Supabase Edge Functions) — needs Supabase to send from.
-13. **Mutation-queue background sync** for offline Supabase writes.
+13. **True server Web Push** (VAPID + Supabase Edge Functions) — needs Supabase to send from.
+14. **Mutation-queue background sync** for offline Supabase writes.

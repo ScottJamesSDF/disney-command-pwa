@@ -1,8 +1,24 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { freshDb } from '@/test/dbTestUtils'
+import type { Trip } from '@/domain/entities/trip'
 import type { DisneyCommandDB } from '../../db'
 import { seedIfEmpty } from '../../seedLoader'
 import { LocalTripRepository } from '../LocalTripRepository'
+
+function makeTrip(overrides: Partial<Trip> = {}): Trip {
+  const now = new Date(2026, 6, 2, 12, 0, 0, 0)
+  return {
+    id: 'trip_new',
+    name: 'A New Trip',
+    startDate: now.toISOString(),
+    endDate: now.toISOString(),
+    familyId: 'family_johnson',
+    parkDays: [],
+    isActive: true,
+    createdAt: now.toISOString(),
+    ...overrides,
+  }
+}
 
 describe('LocalTripRepository', () => {
   let db: DisneyCommandDB
@@ -40,5 +56,42 @@ describe('LocalTripRepository', () => {
       (p) => p.attractionId === 'space_mountain',
     )
     expect(planned?.isSkipped).toBe(true)
+  })
+
+  describe('saveTrip', () => {
+    it('persists a new trip so it becomes retrievable via getActiveTrip', async () => {
+      await repository.saveTrip(makeTrip())
+
+      const trip = await repository.getActiveTrip()
+      expect(trip?.id).toBe('trip_new')
+      expect(trip?.name).toBe('A New Trip')
+    })
+
+    it('updates an existing trip in place', async () => {
+      await repository.saveTrip(makeTrip())
+      await repository.saveTrip(makeTrip({ name: 'Renamed Trip', notes: 'Updated notes' }))
+
+      const trip = await repository.getActiveTrip()
+      expect(trip?.id).toBe('trip_new')
+      expect(trip?.name).toBe('Renamed Trip')
+      expect(trip?.notes).toBe('Updated notes')
+    })
+
+    it('deactivates any other active trip when saving a new active trip', async () => {
+      await repository.saveTrip(makeTrip())
+
+      const active = await repository.getActiveTrip()
+      expect(active?.id).toBe('trip_new')
+
+      const previouslySeeded = await db.trips.get('trip_demo')
+      expect(previouslySeeded?.isActive).toBe(false)
+    })
+
+    it('does not disturb the active trip when saving an inactive trip', async () => {
+      await repository.saveTrip(makeTrip({ id: 'trip_draft', isActive: false }))
+
+      const active = await repository.getActiveTrip()
+      expect(active?.id).toBe('trip_demo')
+    })
   })
 })

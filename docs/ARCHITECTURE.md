@@ -88,8 +88,21 @@ No feature, hook, or component changes are required.
 parameters (including `currentTime`) and return plain data — no I/O, no framework dependency, no
 hidden system-clock reads. This is what makes them fully unit-testable (see
 [TESTING_STRATEGY.md](./TESTING_STRATEGY.md)) and is also what "Planner outputs JSON, UI consumes
-JSON" means in practice: the engines are the planner, and their output (`CommandQueue`,
-`Contingency[]`) is plain JSON-serializable data that any UI could render.
+JSON" means in practice: their output (`CommandQueue`, `Contingency[]`) is plain
+JSON-serializable data that any UI could render.
+
+## Vocabulary: Operations Engine vs. Planner
+
+`application/engines/commandEngine.ts` is the **Operations Engine** — it continuously recomputes
+"what should we do next" from whatever `ParkDay.plannedAttractions` (and dining/entertainment)
+already exist. It has no opinion about how that plan was produced.
+
+The **Planner** is whatever produces `ParkDay.plannedAttractions` for the Operations Engine to
+consume. Today that's the manual Trip/Family editor at `src/features/planner/` — a human fills in
+park days, attractions, and dining by hand. Later, an AI-assisted Planner can generate the same
+`Trip`/`ParkDay` JSON shape automatically; because the Operations Engine only ever reads that JSON
+shape and never cares how it was produced, swapping manual entry for AI generation requires no
+Operations Engine changes — only a new producer of the same data.
 
 ## Roadmap
 

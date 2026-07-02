@@ -24,10 +24,14 @@ export const PlannedAttractionSchema = z.object({
   attractionName: z.string(),
   plannedOrder: z.number().int().nonnegative(),
   isCompleted: z.boolean(),
-  completedAt: z.string().datetime().nullable().default(null),
+  // Deliberately no `.default()` on `completedAt`/`isSkipped` — a default makes zod's input and
+  // output types diverge (input optional, output required), which breaks `useForm`'s type
+  // inference when this schema is used as a react-hook-form resolver (see ParkDayEditorDialog).
+  // Every call site already sets both explicitly, so nothing relied on the default.
+  completedAt: z.string().datetime().nullable(),
   usedLightningLane: z.boolean(),
   actualWaitMinutes: z.number().int().nonnegative().optional(),
-  isSkipped: z.boolean().default(false),
+  isSkipped: z.boolean(),
 })
 export type PlannedAttraction = z.infer<typeof PlannedAttractionSchema>
 

@@ -15,6 +15,25 @@ export class LocalTripRepository implements TripRepository {
     return trip ? TripSchema.parse(trip) : null
   }
 
+  async saveTrip(trip: Trip): Promise<void> {
+    await this.db.ready
+    const validated = TripSchema.parse(trip)
+
+    await this.db.transaction('rw', this.db.trips, async () => {
+      if (validated.isActive) {
+        const others = await this.db.trips
+          .filter((t) => t.isActive && t.id !== validated.id)
+          .toArray()
+        await Promise.all(
+          others.map((other) =>
+            this.db.trips.put(TripSchema.parse({ ...other, isActive: false })),
+          ),
+        )
+      }
+      await this.db.trips.put(validated)
+    })
+  }
+
   async markAttractionCompleted(
     parkDayId: string,
     attractionId: string,

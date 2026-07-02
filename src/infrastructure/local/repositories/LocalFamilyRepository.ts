@@ -16,6 +16,11 @@ export class LocalFamilyRepository implements FamilyRepository {
     return FamilySchema.parse(family)
   }
 
+  async saveFamily(family: Family): Promise<void> {
+    await this.db.ready
+    await this.db.families.put(FamilySchema.parse(family))
+  }
+
   async logHydration(memberId: string, at: Date): Promise<void> {
     await this.updateMember(memberId, (member) => ({
       ...member,

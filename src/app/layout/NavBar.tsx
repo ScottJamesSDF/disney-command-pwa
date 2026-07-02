@@ -26,7 +26,7 @@ const NAV_ENTRIES: NavEntry[] = [
   { label: 'Timeline', icon: Clock },
   { label: 'Maps', icon: MapPin },
   { label: "Galaxy's Edge", icon: Sparkles },
-  { label: 'Planner', icon: CheckSquare },
+  { label: 'Planner', icon: CheckSquare, to: '/planner' },
   { label: 'Lightning Lane', icon: Zap },
   { label: 'Dining', icon: Utensils },
   { label: 'Family', icon: Users },

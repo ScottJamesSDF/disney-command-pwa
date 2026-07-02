@@ -36,4 +36,28 @@ describe('LocalFamilyRepository', () => {
     const jack = family.members.find((m) => m.id === 'member_jack')
     expect(jack?.energyLevel).toBe('exhausted')
   })
+
+  describe('saveFamily', () => {
+    it('persists a new family so it becomes retrievable via getActiveFamily', async () => {
+      await db.families.clear()
+      await repository.saveFamily({
+        id: 'family_new',
+        name: 'The Smith Family',
+        members: [],
+        createdAt: new Date(2026, 6, 2, 12, 0, 0, 0).toISOString(),
+      })
+
+      const family = await repository.getActiveFamily()
+      expect(family.id).toBe('family_new')
+      expect(family.name).toBe('The Smith Family')
+    })
+
+    it('round-trips an updated members array on an existing family', async () => {
+      const existing = await repository.getActiveFamily()
+      await repository.saveFamily({ ...existing, members: existing.members.slice(0, 2) })
+
+      const updated = await repository.getActiveFamily()
+      expect(updated.members).toHaveLength(2)
+    })
+  })
 })

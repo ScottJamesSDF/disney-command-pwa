@@ -24,6 +24,14 @@ describe('LocalAttractionRepository', () => {
     expect(attractions.every((a) => a.park === 'magicKingdom')).toBe(true)
   })
 
+  it('returns every seeded attraction across all parks via getAllAttractions', async () => {
+    const attractions = await repository.getAllAttractions()
+    expect(attractions).toHaveLength(8)
+    const parks = new Set(attractions.map((a) => a.park))
+    expect(parks.has('magicKingdom')).toBe(true)
+    expect(parks.has('hollywoodStudios')).toBe(true)
+  })
+
   it('does not start a second interval when called twice', () => {
     repository.startLiveSimulation()
     const firstIntervalId = (repository as unknown as { intervalId: unknown }).intervalId

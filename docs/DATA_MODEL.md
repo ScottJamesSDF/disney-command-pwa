@@ -145,6 +145,14 @@ Only needed if the Supabase phase wants to share a weather cache across users hi
 park coordinates rather than relying on Open-Meteo's own caching + the client-side IndexedDB
 cache. Not required for correctness.
 
+### `Destination` (client-side only, not a table)
+A lightweight UI grouping of `ParkId`s ("Walt Disney World Resort" → magicKingdom/epcot/
+hollywoodStudios/animalKingdom; "Disneyland Resort" → disneyland/californiaAdventure), defined in
+`src/domain/constants/destinations.ts`. It is derivable entirely from `park_id`/`ParkId`, so it is
+intentionally **not** a stored column or FK on `trips`/`park_days` — only used to group the Park
+picker in the Planner UI by resort. If a third resort's parks are added to the catalog later, this
+stays a pure constants-file change.
+
 ## Row Level Security (RLS)
 
 Once on Supabase, every user-owned table (`trips`, `families`, `park_days` via join,
