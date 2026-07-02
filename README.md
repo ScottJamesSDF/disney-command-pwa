@@ -73,10 +73,13 @@ real user-entered data instead of only the fixed demo trip/family.
 1. ~~**Trip/Family data model editor**~~ — **done.** Manual Trip + Family editor
    (`src/features/planner/`) lets users create/edit their own trip and family so every other
    feature below has real data to work with instead of the fixed demo trip/family.
-2. **AI itinerary generation** — an AI-assisted Planner that generates the same `Trip`/`ParkDay`
-   JSON the manual editor (and the Dashboard's Operations Engine) already consume, replacing hand
-   entry with AI-assisted suggestions. See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)'s
-   "Operations Engine vs. Planner" section for why this requires zero Operations Engine changes.
+2. ~~**AI itinerary generation (heuristic, single-day)**~~ — **done.** A rule-based, fully-offline
+   auto-planner (`src/application/planner/generateItinerary.ts`) ranks and selects attractions by
+   reusing the existing desirability scorer, exposed as an "Auto-Plan Day" button in the manual
+   editor that fills in `plannedAttractions` for a single already-configured park day, which the
+   user can still hand-edit before saving. **Still open:** an LLM/conversational version, and
+   multi-day/whole-trip generation (deciding which park to visit which day) — both out of scope
+   for this pass.
 3. **Lightning Lane Assistant** — booking flow that sets `lightningLaneReturnTime` on live attractions.
 4. **Dining** — CRUD for reservations, feeding the dining-imminent waterfall step.
 5. **Family management enhancements** — richer member management beyond the base editor (e.g.

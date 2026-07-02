@@ -71,7 +71,7 @@ export function PlannerPage() {
           <CardTitle>Trip</CardTitle>
         </CardHeader>
         <CardContent>
-          <TripForm trip={trip} />
+          <TripForm trip={trip} family={family} />
         </CardContent>
       </Card>
 

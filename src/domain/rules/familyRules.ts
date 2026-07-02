@@ -50,3 +50,13 @@ export function membersNeedingHydration(family: Family, now: Date): FamilyMember
 export function membersNeedingRest(family: Family, now: Date): FamilyMember[] {
   return family.members.filter((member) => needsRest(member, now))
 }
+
+/** True if any family member has this attraction id in `favoriteAttractions`. */
+export function isFavoritedByAnyMember(attractionId: string, family: Family): boolean {
+  return family.members.some((member) => member.favoriteAttractions.includes(attractionId))
+}
+
+/** True if any family member has this attraction id in `dislikedAttractions`. */
+export function isDislikedByAnyMember(attractionId: string, family: Family): boolean {
+  return family.members.some((member) => member.dislikedAttractions.includes(attractionId))
+}

@@ -225,4 +225,4 @@ export function detectContingencies(input: DetectContingenciesInput): Contingenc
   return contingencies.filter((c): c is Contingency => c != null)
 }
 
-export { isBehindSchedule, findNearbyAlternatives, findMustDoAlternatives }
+export { isBehindSchedule, findNearbyAlternatives, findMustDoAlternatives, RIDES_PER_HOUR_ESTIMATE }

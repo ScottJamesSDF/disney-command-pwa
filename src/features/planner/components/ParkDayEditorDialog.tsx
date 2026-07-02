@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Plus, Sparkles, Trash2 } from 'lucide-react'
 
+import type { Family } from '@/domain/entities/family'
 import { ParkDaySchema, type ParkDay, type TimeOfDay } from '@/domain/entities/trip'
 import { PARK_NAMES } from '@/domain/constants/parks'
 import type { DestinationId } from '@/domain/entities/destination'
@@ -12,6 +13,7 @@ import {
   DESTINATION_PARKS,
   PARK_TO_DESTINATION,
 } from '@/domain/constants/destinations'
+import { generateItinerary } from '@/application/planner/generateItinerary'
 import { useRepositories } from '@/shared/hooks/useRepositories'
 import { queryKeys } from '@/shared/lib/queryKeys'
 import { Button } from '@/shared/components/ui/button'
@@ -80,11 +82,19 @@ function emptyParkDay(): ParkDay {
 
 interface ParkDayEditorDialogProps {
   parkDay: ParkDay | null
+  family: Family
+  excludedAttractionIds: Set<string>
   onClose: () => void
   onSave: (parkDay: ParkDay) => void
 }
 
-export function ParkDayEditorDialog({ parkDay, onClose, onSave }: ParkDayEditorDialogProps) {
+export function ParkDayEditorDialog({
+  parkDay,
+  family,
+  excludedAttractionIds,
+  onClose,
+  onSave,
+}: ParkDayEditorDialogProps) {
   const { attractionRepository } = useRepositories()
   const defaultValues = parkDay ?? emptyParkDay()
 
@@ -286,28 +296,49 @@ export function ParkDayEditorDialog({ parkDay, onClose, onSave }: ParkDayEditorD
             <section className="space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">Planned Attractions</h3>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  className="gap-1"
-                  disabled={!attractionsQuery.data?.length}
-                  onClick={() => {
-                    const first = attractionsQuery.data?.[0]
-                    if (!first) return
-                    plannedAttractions.append({
-                      attractionId: first.id,
-                      attractionName: first.name,
-                      plannedOrder: plannedAttractions.fields.length,
-                      isCompleted: false,
-                      completedAt: null,
-                      usedLightningLane: false,
-                      isSkipped: false,
-                    })
-                  }}
-                >
-                  <Plus className="size-4" /> Add
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    disabled={!attractionsQuery.data?.length}
+                    title="Replaces the current list with a ranked auto-plan"
+                    onClick={() => {
+                      const result = generateItinerary({
+                        parkDay: form.getValues(),
+                        family,
+                        liveAttractions: attractionsQuery.data ?? [],
+                        excludedAttractionIds,
+                      })
+                      plannedAttractions.replace(result)
+                    }}
+                  >
+                    <Sparkles className="size-4" /> Auto-Plan Day
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    disabled={!attractionsQuery.data?.length}
+                    onClick={() => {
+                      const first = attractionsQuery.data?.[0]
+                      if (!first) return
+                      plannedAttractions.append({
+                        attractionId: first.id,
+                        attractionName: first.name,
+                        plannedOrder: plannedAttractions.fields.length,
+                        isCompleted: false,
+                        completedAt: null,
+                        usedLightningLane: false,
+                        isSkipped: false,
+                      })
+                    }}
+                  >
+                    <Plus className="size-4" /> Add
+                  </Button>
+                </div>
               </div>
               {plannedAttractions.fields.map((field, index) => (
                 <div key={field._fieldKey} className="flex items-center gap-2">

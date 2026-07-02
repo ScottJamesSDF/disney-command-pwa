@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 
+import type { Family } from '@/domain/entities/family'
 import { TripSchema, type ParkDay, type Trip } from '@/domain/entities/trip'
 import { Button } from '@/shared/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form'
@@ -25,7 +26,7 @@ interface EditorState {
   index: number | null
 }
 
-export function TripForm({ trip }: { trip: Trip }) {
+export function TripForm({ trip, family }: { trip: Trip; family: Family }) {
   const saveTrip = useSaveTrip()
   const [editorState, setEditorState] = useState<EditorState | null>(null)
 
@@ -50,6 +51,16 @@ export function TripForm({ trip }: { trip: Trip }) {
       parkDays.append(parkDay)
     }
     setEditorState(null)
+  }
+
+  /** Every attractionId already planned on other days of this trip, for cross-day dedup. */
+  function computeExcludedAttractionIds(excludeIndex: number | null): Set<string> {
+    const ids = new Set<string>()
+    parkDays.fields.forEach((day, i) => {
+      if (i === excludeIndex) return
+      day.plannedAttractions.forEach((p) => ids.add(p.attractionId))
+    })
+    return ids
   }
 
   return (
@@ -170,6 +181,8 @@ export function TripForm({ trip }: { trip: Trip }) {
       {editorState && (
         <ParkDayEditorDialog
           parkDay={editorState.parkDay}
+          family={family}
+          excludedAttractionIds={computeExcludedAttractionIds(editorState.index)}
           onClose={() => setEditorState(null)}
           onSave={handleParkDaySave}
         />

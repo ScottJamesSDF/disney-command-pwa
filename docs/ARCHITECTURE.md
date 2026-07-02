@@ -104,6 +104,11 @@ park days, attractions, and dining by hand. Later, an AI-assisted Planner can ge
 shape and never cares how it was produced, swapping manual entry for AI generation requires no
 Operations Engine changes — only a new producer of the same data.
 
+As of the heuristic auto-planner (`src/application/planner/generateItinerary.ts`), that "later" has
+partly arrived: a rule-based scoring/ranking producer now sits alongside the manual editor as a
+second, interchangeable source of the same `plannedAttractions` data. A future LLM-based or
+multi-day/whole-trip Planner would be a third producer under the same contract.
+
 ## Roadmap
 
 See the root [README.md](../README.md) for the Phase 2+ feature roadmap.
