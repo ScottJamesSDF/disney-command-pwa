@@ -1,0 +1,71 @@
+{
+  "id": "family_johnson",
+  "name": "The Johnson Family",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "members": [
+    {
+      "id": "member_dad",
+      "name": "Dad",
+      "age": 42,
+      "heightCm": 180,
+      "ageGroup": "adult",
+      "energyLevel": "high",
+      "favoriteAttractions": ["space_mountain", "rise_of_resistance"],
+      "dislikedAttractions": [],
+      "needsStroller": false,
+      "avatarEmoji": "👨",
+      "stepsToday": 8500,
+      "ridesCompleted": 1,
+      "lastHydrationReminderMinutesAgo": 30,
+      "lastRestBreakHoursAgo": 1
+    },
+    {
+      "id": "member_mom",
+      "name": "Mom",
+      "age": 40,
+      "heightCm": 165,
+      "ageGroup": "adult",
+      "energyLevel": "high",
+      "favoriteAttractions": ["haunted_mansion", "pirates_caribbean"],
+      "dislikedAttractions": [],
+      "needsStroller": false,
+      "avatarEmoji": "👩",
+      "stepsToday": 8200,
+      "ridesCompleted": 1,
+      "lastHydrationReminderMinutesAgo": 30,
+      "lastRestBreakHoursAgo": 1
+    },
+    {
+      "id": "member_emma",
+      "name": "Emma",
+      "age": 10,
+      "heightCm": 140,
+      "ageGroup": "tween",
+      "energyLevel": "high",
+      "favoriteAttractions": ["seven_dwarfs_mine", "smugglers_run"],
+      "dislikedAttractions": [],
+      "needsStroller": false,
+      "avatarEmoji": "👧",
+      "stepsToday": 7600,
+      "ridesCompleted": 1,
+      "lastHydrationReminderMinutesAgo": 45,
+      "lastRestBreakHoursAgo": 1.5
+    },
+    {
+      "id": "member_jack",
+      "name": "Jack",
+      "age": 6,
+      "heightCm": 115,
+      "ageGroup": "child",
+      "energyLevel": "medium",
+      "favoriteAttractions": ["seven_dwarfs_mine"],
+      "dislikedAttractions": ["space_mountain"],
+      "needsStroller": false,
+      "avatarEmoji": "👦",
+      "stepsToday": 7100,
+      "ridesCompleted": 1,
+      "lastHydrationReminderMinutesAgo": 55,
+      "lastRestBreakHoursAgo": 2
+    }
+  ]
+}

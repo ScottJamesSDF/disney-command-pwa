@@ -1,0 +1,130 @@
+@import 'tailwindcss';
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Disney Command "mission control" palette — ported verbatim from the
+ * reference Flutter app's DisneyCommandTheme (lib/app/theme.dart).
+ * Dark is the default resting state (a night-sky command center); `.light`
+ * overrides to a daytime variant for accessibility/preference.
+ */
+:root {
+  --night-sky: #0a1628;
+  --deep-space: #0d1b2a;
+  --midnight: #1a2332;
+  --command-blue: #1e3a5f;
+  --bright-blue: #2563eb;
+  --magic-gold: #ffd700;
+  --light-gold: #ffec6e;
+  --enchanted-purple: #7b2fbe;
+  --pixie-green: #00c853;
+  --ember-orange: #ff6d00;
+  --castle-red: #d32f2f;
+  --text-primary: #f0f4ff;
+  --text-secondary: #8ba4c0;
+  --text-muted: #4a6080;
+  --lightning-lane: #00b4d8;
+  --lightning-lane-ready: #00e5ff;
+  --status-go: #00c853;
+  --status-caution: #ffb300;
+  --status-stop: #d32f2f;
+
+  --radius: 0.75rem;
+
+  --background: var(--night-sky);
+  --foreground: var(--text-primary);
+  --card: var(--midnight);
+  --card-foreground: var(--text-primary);
+  --popover: var(--midnight);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--bright-blue);
+  --primary-foreground: var(--text-primary);
+  --secondary: var(--command-blue);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--command-blue);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--magic-gold);
+  --accent-foreground: var(--deep-space);
+  --destructive: var(--castle-red);
+  --destructive-foreground: var(--text-primary);
+  --border: #2a4060;
+  --input: #2a4060;
+  --ring: var(--bright-blue);
+}
+
+.light {
+  --background: #f5f7fb;
+  --foreground: #0a1628;
+  --card: #ffffff;
+  --card-foreground: #0a1628;
+  --popover: #ffffff;
+  --popover-foreground: #0a1628;
+  --primary: var(--bright-blue);
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f5;
+  --secondary-foreground: #0a1628;
+  --muted: #e2e8f5;
+  --muted-foreground: #4a6080;
+  --accent: #b8860b;
+  --accent-foreground: #ffffff;
+  --destructive: var(--castle-red);
+  --destructive-foreground: #ffffff;
+  --border: #d5dceb;
+  --input: #d5dceb;
+  --ring: var(--bright-blue);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-magic-gold: var(--magic-gold);
+  --color-light-gold: var(--light-gold);
+  --color-enchanted-purple: var(--enchanted-purple);
+  --color-pixie-green: var(--pixie-green);
+  --color-ember-orange: var(--ember-orange);
+  --color-castle-red: var(--castle-red);
+  --color-lightning-lane: var(--lightning-lane);
+  --color-lightning-lane-ready: var(--lightning-lane-ready);
+  --color-status-go: var(--status-go);
+  --color-status-caution: var(--status-caution);
+  --color-status-stop: var(--status-stop);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+  }
+}

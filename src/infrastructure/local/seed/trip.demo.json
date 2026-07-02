@@ -1,0 +1,99 @@
+{
+  "id": "trip_demo",
+  "name": "The Johnson Family Magic Kingdom Adventure",
+  "startDateOffsetDays": 0,
+  "endDateOffsetDays": 3,
+  "familyId": "family_johnson",
+  "hotelName": "Disney's Grand Floridian Resort & Spa",
+  "notes": "First Magic Kingdom day of the trip!",
+  "isActive": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "parkDays": [
+    {
+      "id": "parkday_today",
+      "dateOffsetDays": 0,
+      "park": "magicKingdom",
+      "parkOpenTime": { "hour": 9, "minute": 0 },
+      "parkCloseTime": { "hour": 22, "minute": 0 },
+      "arrivalTime": { "hour": 8, "minute": 45 },
+      "hasParkHopper": false,
+      "plannedAttractions": [
+        {
+          "attractionId": "seven_dwarfs_mine",
+          "attractionName": "Seven Dwarfs Mine Train",
+          "plannedOrder": 0,
+          "isCompleted": true,
+          "completedMinutesAgo": 90,
+          "usedLightningLane": true,
+          "actualWaitMinutes": 10,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "haunted_mansion",
+          "attractionName": "Haunted Mansion",
+          "plannedOrder": 1,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "pirates_caribbean",
+          "attractionName": "Pirates of the Caribbean",
+          "plannedOrder": 2,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "big_thunder",
+          "attractionName": "Big Thunder Mountain Railroad",
+          "plannedOrder": 3,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "space_mountain",
+          "attractionName": "Space Mountain",
+          "plannedOrder": 4,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        }
+      ],
+      "diningReservations": [
+        {
+          "id": "dining_beog",
+          "restaurantName": "Be Our Guest Restaurant",
+          "restaurantId": "be_our_guest",
+          "reservationTimeMinutesFromMidnight": 750,
+          "partySize": 4,
+          "isConfirmed": true,
+          "confirmationNumber": "WDW123456",
+          "isMobileOrder": false,
+          "isCompleted": false
+        }
+      ],
+      "entertainment": [
+        {
+          "id": "ent_parade",
+          "name": "Festival of Fantasy Parade",
+          "showTimeMinutesFromMidnight": 900,
+          "location": "Main Street, U.S.A.",
+          "durationMinutes": 12,
+          "recommendedArrivalMinutesBefore": 30,
+          "isCompleted": false
+        },
+        {
+          "id": "ent_fireworks",
+          "name": "Happily Ever After",
+          "showTimeMinutesFromMidnight": 1260,
+          "location": "Cinderella Castle Hub",
+          "durationMinutes": 18,
+          "recommendedArrivalMinutesBefore": 20,
+          "isCompleted": false
+        }
+      ]
+    }
+  ]
+}
