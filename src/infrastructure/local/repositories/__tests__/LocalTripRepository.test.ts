@@ -33,7 +33,7 @@ describe('LocalTripRepository', () => {
   it('returns the active trip', async () => {
     const trip = await repository.getActiveTrip()
     expect(trip?.id).toBe('trip_demo')
-    expect(trip?.parkDays).toHaveLength(1)
+    expect(trip?.parkDays).toHaveLength(4)
   })
 
   it('marks a planned attraction as completed and persists it', async () => {

@@ -100,6 +100,190 @@
           "isCompleted": false
         }
       ]
+    },
+    {
+      "id": "parkday_2",
+      "dateOffsetDays": 1,
+      "parkOpenTime": { "hour": 8, "minute": 0 },
+      "parkCloseTime": { "hour": 22, "minute": 0 },
+      "arrivalTime": { "hour": 8, "minute": 0 },
+      "plannedAttractions": [
+        {
+          "attractionId": "indiana_jones_adventure",
+          "attractionName": "Indiana Jones Adventure",
+          "plannedOrder": 0,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "peter_pans_flight_dl",
+          "attractionName": "Peter Pan's Flight",
+          "plannedOrder": 1,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "small_world_dl",
+          "attractionName": "it's a small world",
+          "plannedOrder": 2,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "matterhorn_bobsleds",
+          "attractionName": "Matterhorn Bobsleds",
+          "plannedOrder": 3,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "star_tours",
+          "attractionName": "Star Tours – The Adventures Continue",
+          "plannedOrder": 4,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        }
+      ],
+      "diningReservations": [
+        {
+          "id": "dining_cafe_orleans",
+          "restaurantName": "Café Orleans",
+          "restaurantId": "cafe_orleans",
+          "reservationTimeMinutesFromMidnight": 720,
+          "partySize": 4,
+          "isConfirmed": true,
+          "confirmationNumber": "DLR234567",
+          "isMobileOrder": false,
+          "isCompleted": false
+        }
+      ],
+      "entertainment": [
+        {
+          "id": "ent_wondrous_journeys",
+          "name": "Wondrous Journeys",
+          "showTimeMinutesFromMidnight": 1290,
+          "location": "Sleeping Beauty Castle Hub",
+          "durationMinutes": 20,
+          "recommendedArrivalMinutesBefore": 30,
+          "isCompleted": false
+        }
+      ]
+    },
+    {
+      "id": "parkday_3",
+      "dateOffsetDays": 2,
+      "parkOpenTime": { "hour": 8, "minute": 0 },
+      "parkCloseTime": { "hour": 22, "minute": 0 },
+      "arrivalTime": { "hour": 8, "minute": 0 },
+      "plannedAttractions": [
+        {
+          "attractionId": "web_slingers",
+          "attractionName": "WEB SLINGERS: A Spider-Man Adventure",
+          "plannedOrder": 0,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "incredicoaster",
+          "attractionName": "Incredicoaster",
+          "plannedOrder": 1,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "toy_story_midway_mania",
+          "attractionName": "Toy Story Midway Mania!",
+          "plannedOrder": 2,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "grizzly_river_run",
+          "attractionName": "Grizzly River Run",
+          "plannedOrder": 3,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "soarin_dca",
+          "attractionName": "Soarin' Around the World",
+          "plannedOrder": 4,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        }
+      ],
+      "diningReservations": [
+        {
+          "id": "dining_carthay_circle",
+          "restaurantName": "Carthay Circle Restaurant",
+          "restaurantId": "carthay_circle",
+          "reservationTimeMinutesFromMidnight": 780,
+          "partySize": 4,
+          "isConfirmed": true,
+          "confirmationNumber": "DLR345678",
+          "isMobileOrder": false,
+          "isCompleted": false
+        }
+      ],
+      "entertainment": [
+        {
+          "id": "ent_world_of_color_2",
+          "name": "World of Color",
+          "showTimeMinutesFromMidnight": 1290,
+          "location": "Paradise Bay, Disney California Adventure",
+          "durationMinutes": 24,
+          "recommendedArrivalMinutesBefore": 30,
+          "isCompleted": false
+        }
+      ]
+    },
+    {
+      "id": "parkday_4",
+      "dateOffsetDays": 3,
+      "parkOpenTime": { "hour": 8, "minute": 0 },
+      "parkCloseTime": { "hour": 14, "minute": 0 },
+      "arrivalTime": { "hour": 8, "minute": 30 },
+      "plannedAttractions": [
+        {
+          "attractionId": "smugglers_run_dl",
+          "attractionName": "Millennium Falcon: Smugglers Run",
+          "plannedOrder": 0,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "jungle_cruise_dl",
+          "attractionName": "Jungle Cruise",
+          "plannedOrder": 1,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        }
+      ],
+      "diningReservations": [
+        {
+          "id": "dining_award_wieners",
+          "restaurantName": "Award Wieners",
+          "restaurantId": "award_wieners",
+          "reservationTimeMinutesFromMidnight": 690,
+          "partySize": 4,
+          "isConfirmed": true,
+          "isMobileOrder": true,
+          "isCompleted": false
+        }
+      ],
+      "entertainment": []
     }
   ]
 }
