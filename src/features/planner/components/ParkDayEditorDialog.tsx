@@ -7,7 +7,7 @@ import type { Attraction, ParkId } from '@/domain/entities/attraction'
 import type { Family } from '@/domain/entities/family'
 import { ParkDaySchema, type ParkDay, type TimeOfDay } from '@/domain/entities/trip'
 import { getParksVisited } from '@/domain/rules/tripRules'
-import { PARK_NAMES } from '@/domain/constants/parks'
+import { AREA_NAMES, PARK_NAMES } from '@/domain/constants/parks'
 import { generateItinerary } from '@/application/planner/generateItinerary'
 import { useRepositories } from '@/shared/hooks/useRepositories'
 import { queryKeys } from '@/shared/lib/queryKeys'
@@ -334,6 +334,9 @@ export function ParkDayEditorDialog({
                               {attractions.map((a) => (
                                 <SelectItem key={a.id} value={a.id}>
                                   {a.name}
+                                  <span className="ml-1 text-xs text-muted-foreground">
+                                    — {AREA_NAMES[a.area]}
+                                  </span>
                                 </SelectItem>
                               ))}
                             </SelectGroup>

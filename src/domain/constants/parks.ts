@@ -54,3 +54,7 @@ export const AREA_NAMES: Record<Area, string> = {
   avengersCampus: 'Avengers Campus',
   paradiseGardensPark: 'Paradise Gardens Park',
 }
+
+export function formatParkArea(park: ParkId, area: Area): string {
+  return `${PARK_NAMES[park]} · ${AREA_NAMES[area]}`
+}

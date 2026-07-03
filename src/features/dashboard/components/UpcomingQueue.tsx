@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Zap } from 'lucide-react'
 import type { NextCommand } from '@/domain/entities/command'
+import { formatParkArea } from '@/domain/constants/parks'
 import { formatMinutes } from '@/shared/lib/formatTime'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { Separator } from '@/shared/components/ui/separator'
@@ -26,6 +27,11 @@ export function UpcomingQueue({ commands }: { commands: NextCommand[] }) {
               <div>
                 <p className="text-sm font-medium">{command.headline}</p>
                 <p className="text-xs text-muted-foreground">{command.subtext}</p>
+                {command.attraction && (
+                  <p className="text-[11px] text-muted-foreground/80">
+                    {formatParkArea(command.attraction.park, command.attraction.area)}
+                  </p>
+                )}
               </div>
               {command.lightningLaneReady ? (
                 <Zap className="mt-0.5 size-4 shrink-0 text-lightning-lane" />

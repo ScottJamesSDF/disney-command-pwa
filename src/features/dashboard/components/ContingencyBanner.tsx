@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertTriangle, Zap } from 'lucide-react'
 import type { Contingency } from '@/application/engines/decisionEngine'
+import { formatParkArea } from '@/domain/constants/parks'
 import { formatMinutes } from '@/shared/lib/formatTime'
 import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert'
 import { Button } from '@/shared/components/ui/button'
@@ -63,6 +64,11 @@ export function ContingencyBanner({ contingencies }: { contingencies: Contingenc
                       <div>
                         <p className="text-sm font-medium">{alt.headline}</p>
                         <p className="text-xs text-muted-foreground">{alt.subtext}</p>
+                        {alt.attraction && (
+                          <p className="text-[11px] text-muted-foreground/80">
+                            {formatParkArea(alt.attraction.park, alt.attraction.area)}
+                          </p>
+                        )}
                       </div>
                       {alt.lightningLaneReady ? (
                         <Zap className="size-4 shrink-0 text-lightning-lane" />

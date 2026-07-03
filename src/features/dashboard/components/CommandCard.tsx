@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Check, SkipForward, Zap } from 'lucide-react'
 import type { NextCommand } from '@/domain/entities/command'
+import { formatParkArea } from '@/domain/constants/parks'
 import { cn } from '@/shared/lib/cn'
 import { formatMinutes } from '@/shared/lib/formatTime'
 import { Badge } from '@/shared/components/ui/badge'
@@ -64,6 +65,11 @@ export function CommandCard({ command }: { command: NextCommand }) {
           </div>
           <h2 className="text-xl font-bold sm:text-2xl">{command.headline}</h2>
           <p className="text-sm text-muted-foreground">{command.subtext}</p>
+          {command.attraction && (
+            <p className="text-xs text-muted-foreground/80">
+              {formatParkArea(command.attraction.park, command.attraction.area)}
+            </p>
+          )}
         </CardHeader>
         <CardContent className="pb-5">
           <div className="grid grid-cols-3 gap-3 rounded-lg bg-secondary/60 p-3 text-center">

@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react'
 
 import type { Attraction } from '@/domain/entities/attraction'
 import { AgeGroupSchema, ENERGY_LEVEL_ORDER, type Family } from '@/domain/entities/family'
+import { formatParkArea } from '@/domain/constants/parks'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { Checkbox } from '@/shared/components/ui/checkbox'
@@ -41,8 +42,9 @@ function AttractionChecklist({
           {attractions.map((attraction) => {
             const checked = field.value.includes(attraction.id)
             return (
-              <label key={attraction.id} className="flex items-center gap-1.5 text-xs">
+              <label key={attraction.id} className="flex items-start gap-1.5 text-xs">
                 <Checkbox
+                  className="mt-0.5"
                   checked={checked}
                   onCheckedChange={(next) => {
                     field.onChange(
@@ -52,7 +54,12 @@ function AttractionChecklist({
                     )
                   }}
                 />
-                {attraction.name}
+                <span>
+                  {attraction.name}
+                  <span className="block text-[10px] text-muted-foreground">
+                    {formatParkArea(attraction.park, attraction.area)}
+                  </span>
+                </span>
               </label>
             )
           })}
