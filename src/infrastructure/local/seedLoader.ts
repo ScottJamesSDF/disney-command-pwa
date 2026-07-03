@@ -5,7 +5,11 @@ import { TripSchema, type Trip } from '@/domain/entities/trip'
 import type { DisneyCommandDB } from './db'
 
 import attractionsMagicKingdom from './seed/attractions.magic-kingdom.json'
-import attractionsGalaxysEdge from './seed/attractions.galaxys-edge.json'
+import attractionsEpcot from './seed/attractions.epcot.json'
+import attractionsHollywoodStudios from './seed/attractions.hollywood-studios.json'
+import attractionsAnimalKingdom from './seed/attractions.animal-kingdom.json'
+import attractionsDisneyland from './seed/attractions.disneyland.json'
+import attractionsCaliforniaAdventure from './seed/attractions.california-adventure.json'
 import familyJohnsonRaw from './seed/family.johnson.json'
 import tripDemoRaw from './seed/trip.demo.json'
 import achievementsRaw from './seed/achievements.json'
@@ -201,7 +205,14 @@ export async function seedIfEmpty(db: DisneyCommandDB, now: Date = new Date()): 
   const existingTripCount = await db.trips.count()
   if (existingTripCount > 0) return
 
-  const attractions = [...attractionsMagicKingdom, ...attractionsGalaxysEdge].map((raw) => {
+  const attractions = [
+    ...attractionsMagicKingdom,
+    ...attractionsEpcot,
+    ...attractionsHollywoodStudios,
+    ...attractionsAnimalKingdom,
+    ...attractionsDisneyland,
+    ...attractionsCaliforniaAdventure,
+  ].map((raw) => {
     const { lightningLaneReturnTimeMinutesFromNow, ...rest } = raw as typeof raw & {
       lightningLaneReturnTimeMinutesFromNow?: number
     }

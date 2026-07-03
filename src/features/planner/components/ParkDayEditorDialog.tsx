@@ -32,7 +32,9 @@ import { Label } from '@/shared/components/ui/label'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select'
@@ -216,11 +218,22 @@ export function ParkDayEditorDialog({
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
+                    {/* All parks are always rendered here (not filtered by destination) — Radix
+                        Select only registers a SelectItem's display label once it has actually
+                        mounted, so a value whose item was never rendered (e.g. because it belonged
+                        to a destination-filtered-out list) can't be displayed and gets silently
+                        reset. Always mounting every item avoids that; Destination is a "jump to
+                        this resort's first park" convenience, not a hard filter on this list. */}
                     <SelectContent>
-                      {DESTINATION_PARKS[destination].map((park) => (
-                        <SelectItem key={park} value={park}>
-                          {PARK_NAMES[park]}
-                        </SelectItem>
+                      {Object.entries(DESTINATION_PARKS).map(([destId, parks]) => (
+                        <SelectGroup key={destId}>
+                          <SelectLabel>{DESTINATION_NAMES[destId as DestinationId]}</SelectLabel>
+                          {parks.map((park) => (
+                            <SelectItem key={park} value={park}>
+                              {PARK_NAMES[park]}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>

@@ -20,13 +20,13 @@ describe('LocalAttractionRepository', () => {
 
   it('returns only attractions for the requested park', async () => {
     const attractions = await repository.getLiveAttractions('magicKingdom')
-    expect(attractions.length).toBe(6)
+    expect(attractions.length).toBe(16)
     expect(attractions.every((a) => a.park === 'magicKingdom')).toBe(true)
   })
 
   it('returns every seeded attraction across all parks via getAllAttractions', async () => {
     const attractions = await repository.getAllAttractions()
-    expect(attractions).toHaveLength(8)
+    expect(attractions).toHaveLength(74)
     const parks = new Set(attractions.map((a) => a.park))
     expect(parks.has('magicKingdom')).toBe(true)
     expect(parks.has('hollywoodStudios')).toBe(true)

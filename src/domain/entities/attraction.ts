@@ -47,6 +47,20 @@ export const AreaSchema = z.enum([
   'asia',
   'dinoLand',
   'pandora',
+  // Disneyland only (mainStreetUSA/adventureland/frontierland/fantasyland/tomorrowland/
+  // starWarsGalaxysEdge are shared with Magic Kingdom/Hollywood Studios — same land concept,
+  // `park` on Attraction already disambiguates which physical park an attraction belongs to)
+  'newOrleansSquare',
+  'mickeysToontown',
+  'critterCountry',
+  // California Adventure
+  'buenaVistaStreet',
+  'hollywoodLand',
+  'carsLand',
+  'pixarPier',
+  'grizzlyPeak',
+  'avengersCampus',
+  'paradiseGardensPark',
 ])
 export type Area = z.infer<typeof AreaSchema>
 

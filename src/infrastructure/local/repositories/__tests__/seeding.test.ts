@@ -15,7 +15,7 @@ describe('seedIfEmpty', () => {
 
     expect(await db.trips.count()).toBe(1)
     expect(await db.families.count()).toBe(1)
-    expect(await db.attractions.count()).toBe(8)
+    expect(await db.attractions.count()).toBe(74)
     expect(await db.achievements.count()).toBe(20)
   })
 
