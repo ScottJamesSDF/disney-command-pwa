@@ -51,6 +51,16 @@
   --border: #2a4060;
   --input: #2a4060;
   --ring: var(--bright-blue);
+
+  /* Maps page — categorical land colors (dataviz skill's validated 8-slot palette, dark steps). */
+  --map-land-1: #3987e5;
+  --map-land-2: #199e70;
+  --map-land-3: #c98500;
+  --map-land-4: #008300;
+  --map-land-5: #9085e9;
+  --map-land-6: #e66767;
+  --map-land-7: #d55181;
+  --map-land-8: #d95926;
 }
 
 .light {
@@ -73,6 +83,16 @@
   --border: #d5dceb;
   --input: #d5dceb;
   --ring: var(--bright-blue);
+
+  /* Maps page — same slots, light steps. */
+  --map-land-1: #2a78d6;
+  --map-land-2: #1baf7a;
+  --map-land-3: #eda100;
+  --map-land-4: #008300;
+  --map-land-5: #4a3aa7;
+  --map-land-6: #e34948;
+  --map-land-7: #e87ba4;
+  --map-land-8: #eb6834;
 }
 
 @theme inline {
@@ -107,6 +127,15 @@
   --color-status-go: var(--status-go);
   --color-status-caution: var(--status-caution);
   --color-status-stop: var(--status-stop);
+
+  --color-map-land-1: var(--map-land-1);
+  --color-map-land-2: var(--map-land-2);
+  --color-map-land-3: var(--map-land-3);
+  --color-map-land-4: var(--map-land-4);
+  --color-map-land-5: var(--map-land-5);
+  --color-map-land-6: var(--map-land-6);
+  --color-map-land-7: var(--map-land-7);
+  --color-map-land-8: var(--map-land-8);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

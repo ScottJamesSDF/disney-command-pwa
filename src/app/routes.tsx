@@ -3,6 +3,7 @@ import { AppShell } from './layout/AppShell'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { PlannerPage } from '@/features/planner/PlannerPage'
 import { TimelinePage } from '@/features/timeline/TimelinePage'
+import { MapsPage } from '@/features/maps/MapsPage'
 
 export const router = createBrowserRouter([
   {
@@ -11,6 +12,7 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: 'planner', element: <PlannerPage /> },
       { path: 'timeline', element: <TimelinePage /> },
+      { path: 'maps', element: <MapsPage /> },
     ],
   },
 ])

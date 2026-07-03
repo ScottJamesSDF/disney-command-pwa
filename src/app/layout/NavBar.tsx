@@ -24,7 +24,7 @@ interface NavEntry {
 const NAV_ENTRIES: NavEntry[] = [
   { label: 'Dashboard', icon: Compass, to: '/' },
   { label: 'Timeline', icon: Clock, to: '/timeline' },
-  { label: 'Maps', icon: MapPin },
+  { label: 'Maps', icon: MapPin, to: '/maps' },
   { label: "Galaxy's Edge", icon: Sparkles },
   { label: 'Planner', icon: CheckSquare, to: '/planner' },
   { label: 'Lightning Lane', icon: Zap },
