@@ -8,6 +8,8 @@ export const AttractionTypeSchema = z.enum([
   'entertainment',
   'photo',
   'shop',
+  'walkthrough',
+  'transportation',
 ])
 export type AttractionType = z.infer<typeof AttractionTypeSchema>
 
@@ -52,11 +54,12 @@ export const AreaSchema = z.enum([
   // `park` on Attraction already disambiguates which physical park an attraction belongs to)
   'newOrleansSquare',
   'mickeysToontown',
-  'critterCountry',
+  'bayouCountry',
   // California Adventure
   'buenaVistaStreet',
   'hollywoodLand',
   'carsLand',
+  'sanFransokyoSquare',
   'pixarPier',
   'grizzlyPeak',
   'avengersCampus',
