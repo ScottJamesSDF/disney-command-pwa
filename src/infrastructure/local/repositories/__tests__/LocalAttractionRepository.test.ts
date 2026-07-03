@@ -1,8 +1,38 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { freshDb } from '@/test/dbTestUtils'
+import type { Attraction } from '@/domain/entities/attraction'
 import type { DisneyCommandDB } from '../../db'
 import { seedIfEmpty } from '../../seedLoader'
 import { LocalAttractionRepository, simulateAttractionTick } from '../LocalAttractionRepository'
+
+function makeTestAttraction(overrides: Partial<Attraction> = {}): Attraction {
+  return {
+    id: 'test_attraction',
+    name: 'Test Attraction',
+    park: 'disneyland',
+    area: 'fantasyland',
+    type: 'ride',
+    description: 'A test attraction.',
+    averageWaitMinutes: 20,
+    currentWaitMinutes: 20,
+    hasLightningLane: false,
+    lightningLaneAvailable: false,
+    lightningLaneReturnTime: null,
+    latitude: 33.8121,
+    longitude: -117.919,
+    mapX: 0.5,
+    mapY: 0.5,
+    durationMinutes: 5,
+    isOpen: true,
+    tags: [],
+    thrillLevel: 2,
+    heightRequirement: null,
+    isGalaxysEdge: false,
+    photoTip: null,
+    walkFromHubMinutes: 5,
+    ...overrides,
+  }
+}
 
 describe('LocalAttractionRepository', () => {
   let db: DisneyCommandDB
@@ -30,6 +60,31 @@ describe('LocalAttractionRepository', () => {
     const parks = new Set(attractions.map((a) => a.park))
     expect(parks.has('disneyland')).toBe(true)
     expect(parks.has('californiaAdventure')).toBe(true)
+  })
+
+  it('saveAttraction inserts a brand-new attraction', async () => {
+    await repository.saveAttraction(makeTestAttraction())
+
+    const attractions = await repository.getAllAttractions()
+    expect(attractions).toHaveLength(67)
+    expect(attractions.find((a) => a.id === 'test_attraction')).toMatchObject({
+      name: 'Test Attraction',
+      mapX: 0.5,
+      mapY: 0.5,
+    })
+  })
+
+  it('saveAttraction updates an existing attraction in place', async () => {
+    await repository.saveAttraction(makeTestAttraction())
+    await repository.saveAttraction(makeTestAttraction({ mapX: 0.75, mapY: 0.25, isOpen: false }))
+
+    const attractions = await repository.getAllAttractions()
+    expect(attractions).toHaveLength(67)
+    expect(attractions.find((a) => a.id === 'test_attraction')).toMatchObject({
+      mapX: 0.75,
+      mapY: 0.25,
+      isOpen: false,
+    })
   })
 
   it('does not start a second interval when called twice', () => {

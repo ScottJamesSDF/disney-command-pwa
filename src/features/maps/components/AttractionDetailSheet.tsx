@@ -4,7 +4,9 @@ import { type Attraction, isHighWait, isMediumWait } from '@/domain/entities/att
 import { formatParkArea } from '@/domain/constants/parks'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
+import { Label } from '@/shared/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
+import { Switch } from '@/shared/components/ui/switch'
 
 function waitBadgeVariant(attraction: Attraction): 'destructive' | 'caution' | 'success' {
   if (isHighWait(attraction)) return 'destructive'
@@ -14,10 +16,14 @@ function waitBadgeVariant(attraction: Attraction): 'destructive' | 'caution' | '
 
 export function AttractionDetailSheet({
   attraction,
+  editMode,
   onClose,
+  onToggleOpen,
 }: {
   attraction: Attraction | null
+  editMode: boolean
   onClose: () => void
+  onToggleOpen: (attraction: Attraction, isOpen: boolean) => void
 }) {
   return (
     <Sheet open={attraction != null} onOpenChange={(open) => !open && onClose()}>
@@ -31,6 +37,19 @@ export function AttractionDetailSheet({
               </p>
             </SheetHeader>
             <div className="space-y-3 overflow-y-auto px-5 pb-5">
+              {editMode ? (
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="attraction-is-open"
+                    checked={attraction.isOpen}
+                    onCheckedChange={(checked) => onToggleOpen(attraction, checked)}
+                  />
+                  <Label htmlFor="attraction-is-open">{attraction.isOpen ? 'Open' : 'Closed'}</Label>
+                </div>
+              ) : (
+                !attraction.isOpen && <Badge variant="outline">Closed</Badge>
+              )}
+
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={waitBadgeVariant(attraction)}>
                   {attraction.currentWaitMinutes} min wait
