@@ -38,22 +38,22 @@ describe('LocalTripRepository', () => {
 
   it('marks a planned attraction as completed and persists it', async () => {
     const completedAt = new Date(2026, 6, 2, 15, 30, 0, 0)
-    await repository.markAttractionCompleted('parkday_today', 'haunted_mansion', completedAt)
+    await repository.markAttractionCompleted('parkday_today', 'haunted_mansion_dl', completedAt)
 
     const trip = await repository.getActiveTrip()
     const planned = trip?.parkDays[0]?.plannedAttractions.find(
-      (p) => p.attractionId === 'haunted_mansion',
+      (p) => p.attractionId === 'haunted_mansion_dl',
     )
     expect(planned?.isCompleted).toBe(true)
     expect(planned?.completedAt).toBe(completedAt.toISOString())
   })
 
   it('skips a planned attraction and persists it', async () => {
-    await repository.skipAttraction('parkday_today', 'space_mountain')
+    await repository.skipAttraction('parkday_today', 'space_mountain_dl')
 
     const trip = await repository.getActiveTrip()
     const planned = trip?.parkDays[0]?.plannedAttractions.find(
-      (p) => p.attractionId === 'space_mountain',
+      (p) => p.attractionId === 'space_mountain_dl',
     )
     expect(planned?.isSkipped).toBe(true)
   })

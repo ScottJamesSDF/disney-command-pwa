@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { ParkIdSchema } from './attraction'
 
 export const TimeOfDaySchema = z.object({
   hour: z.number().int().min(0).max(23),
@@ -59,18 +58,20 @@ export const EntertainmentEventSchema = z.object({
 })
 export type EntertainmentEvent = z.infer<typeof EntertainmentEventSchema>
 
+// Deliberately no `park`/`hasParkHopper`/`eveningPark` fields — which park(s) a day touches is
+// derived entirely from `plannedAttractions[].attractionId` looked up against the attraction
+// catalog (see `getParksVisited` in `domain/rules/tripRules.ts`), not stored here. A stored single
+// `park` field couldn't represent park-hopping without extra flags that could drift from what was
+// actually planned; deriving it is always consistent with the real plan.
 export const ParkDaySchema = z.object({
   id: z.string(),
   date: z.string().datetime(),
-  park: ParkIdSchema,
   parkOpenTime: TimeOfDaySchema,
   parkCloseTime: TimeOfDaySchema,
   arrivalTime: TimeOfDaySchema,
   plannedAttractions: z.array(PlannedAttractionSchema),
   diningReservations: z.array(DiningReservationSchema),
   entertainment: z.array(EntertainmentEventSchema),
-  hasParkHopper: z.boolean(),
-  eveningPark: ParkIdSchema.optional(),
 })
 export type ParkDay = z.infer<typeof ParkDaySchema>
 

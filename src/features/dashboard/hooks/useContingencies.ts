@@ -14,8 +14,8 @@ export function useContingencies(): Contingency[] {
   const bucketedNow = useTicker(ENGINE_RECOMPUTE_INTERVAL_MS)
 
   const attractionsQuery = useQuery({
-    queryKey: queryKeys.attractions.live(parkDay?.park ?? 'magicKingdom'),
-    queryFn: () => attractionRepository.getLiveAttractions(parkDay!.park),
+    queryKey: queryKeys.attractions.all(),
+    queryFn: () => attractionRepository.getAllAttractions(),
     enabled: parkDay != null,
   })
 

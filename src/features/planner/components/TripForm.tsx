@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 
 import type { Family } from '@/domain/entities/family'
 import { TripSchema, type ParkDay, type Trip } from '@/domain/entities/trip'
+import { useRepositories } from '@/shared/hooks/useRepositories'
+import { queryKeys } from '@/shared/lib/queryKeys'
 import { Button } from '@/shared/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form'
 import { Input } from '@/shared/components/ui/input'
@@ -27,8 +30,14 @@ interface EditorState {
 }
 
 export function TripForm({ trip, family }: { trip: Trip; family: Family }) {
+  const { attractionRepository } = useRepositories()
   const saveTrip = useSaveTrip()
   const [editorState, setEditorState] = useState<EditorState | null>(null)
+
+  const attractionsQuery = useQuery({
+    queryKey: queryKeys.attractions.all(),
+    queryFn: () => attractionRepository.getAllAttractions(),
+  })
 
   // No explicit `useForm<Trip>` generic — see the note in ParkDayEditorDialog.tsx.
   const form = useForm({
@@ -166,6 +175,7 @@ export function TripForm({ trip, family }: { trip: Trip; family: Family }) {
               <ParkDaySummaryRow
                 key={field._fieldKey}
                 parkDay={field}
+                attractions={attractionsQuery.data ?? []}
                 onEdit={() => setEditorState({ parkDay: field, index })}
                 onRemove={() => parkDays.remove(index)}
               />

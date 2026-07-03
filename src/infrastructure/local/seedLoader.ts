@@ -4,10 +4,10 @@ import { FamilySchema, type Family } from '@/domain/entities/family'
 import { TripSchema, type Trip } from '@/domain/entities/trip'
 import type { DisneyCommandDB } from './db'
 
-import attractionsMagicKingdom from './seed/attractions.magic-kingdom.json'
-import attractionsEpcot from './seed/attractions.epcot.json'
-import attractionsHollywoodStudios from './seed/attractions.hollywood-studios.json'
-import attractionsAnimalKingdom from './seed/attractions.animal-kingdom.json'
+// Walt Disney World's four park seed files (attractions.magic-kingdom.json, .epcot.json,
+// .hollywood-studios.json, .animal-kingdom.json) exist on disk but are deliberately excluded from
+// the active catalog for now, per current scope (Disneyland Resort only) — re-add their imports
+// and merge entries below to bring them back.
 import attractionsDisneyland from './seed/attractions.disneyland.json'
 import attractionsCaliforniaAdventure from './seed/attractions.california-adventure.json'
 import familyJohnsonRaw from './seed/family.johnson.json'
@@ -116,11 +116,9 @@ interface RawEntertainmentEvent {
 interface RawParkDay {
   id: string
   dateOffsetDays: number
-  park: string
   parkOpenTime: { hour: number; minute: number }
   parkCloseTime: { hour: number; minute: number }
   arrivalTime: { hour: number; minute: number }
-  hasParkHopper: boolean
   plannedAttractions: RawPlannedAttraction[]
   diningReservations: RawDiningReservation[]
   entertainment: RawEntertainmentEvent[]
@@ -153,11 +151,9 @@ function resolveTrip(raw: RawTrip, now: Date): Trip {
     parkDays: raw.parkDays.map((day) => ({
       id: day.id,
       date: offsetDaysToISO(day.dateOffsetDays, now),
-      park: day.park,
       parkOpenTime: day.parkOpenTime,
       parkCloseTime: day.parkCloseTime,
       arrivalTime: day.arrivalTime,
-      hasParkHopper: day.hasParkHopper,
       plannedAttractions: day.plannedAttractions.map((p) => ({
         attractionId: p.attractionId,
         attractionName: p.attractionName,
@@ -205,14 +201,7 @@ export async function seedIfEmpty(db: DisneyCommandDB, now: Date = new Date()): 
   const existingTripCount = await db.trips.count()
   if (existingTripCount > 0) return
 
-  const attractions = [
-    ...attractionsMagicKingdom,
-    ...attractionsEpcot,
-    ...attractionsHollywoodStudios,
-    ...attractionsAnimalKingdom,
-    ...attractionsDisneyland,
-    ...attractionsCaliforniaAdventure,
-  ].map((raw) => {
+  const attractions = [...attractionsDisneyland, ...attractionsCaliforniaAdventure].map((raw) => {
     const { lightningLaneReturnTimeMinutesFromNow, ...rest } = raw as typeof raw & {
       lightningLaneReturnTimeMinutesFromNow?: number
     }

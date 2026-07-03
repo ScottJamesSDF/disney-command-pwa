@@ -1,18 +1,13 @@
-import { useState } from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowDown, ArrowUp, Plus, Sparkles, Trash2 } from 'lucide-react'
 
+import type { Attraction, ParkId } from '@/domain/entities/attraction'
 import type { Family } from '@/domain/entities/family'
 import { ParkDaySchema, type ParkDay, type TimeOfDay } from '@/domain/entities/trip'
+import { getParksVisited } from '@/domain/rules/tripRules'
 import { PARK_NAMES } from '@/domain/constants/parks'
-import type { DestinationId } from '@/domain/entities/destination'
-import {
-  DESTINATION_NAMES,
-  DESTINATION_PARKS,
-  PARK_TO_DESTINATION,
-} from '@/domain/constants/destinations'
 import { generateItinerary } from '@/application/planner/generateItinerary'
 import { useRepositories } from '@/shared/hooks/useRepositories'
 import { queryKeys } from '@/shared/lib/queryKeys'
@@ -67,18 +62,31 @@ function datetimeLocalValueToIso(value: string): string {
   return new Date(value).toISOString()
 }
 
+/** Groups attractions by park, preserving each park's first-seen order — used to render the
+ * Planned Attractions picker as one list grouped (not filtered) by park. */
+function groupAttractionsByPark(attractions: Attraction[]): [ParkId, Attraction[]][] {
+  const groups = new Map<ParkId, Attraction[]>()
+  for (const attraction of attractions) {
+    const group = groups.get(attraction.park)
+    if (group) {
+      group.push(attraction)
+    } else {
+      groups.set(attraction.park, [attraction])
+    }
+  }
+  return [...groups.entries()]
+}
+
 function emptyParkDay(): ParkDay {
   return {
     id: crypto.randomUUID(),
     date: new Date().toISOString(),
-    park: 'magicKingdom',
     parkOpenTime: { hour: 9, minute: 0 },
     parkCloseTime: { hour: 22, minute: 0 },
     arrivalTime: { hour: 9, minute: 0 },
     plannedAttractions: [],
     diningReservations: [],
     entertainment: [],
-    hasParkHopper: false,
   }
 }
 
@@ -109,15 +117,14 @@ export function ParkDayEditorDialog({
     defaultValues,
   })
 
-  const [destination, setDestination] = useState<DestinationId>(
-    PARK_TO_DESTINATION[defaultValues.park],
-  )
-  const selectedPark = form.watch('park')
-
+  // Unfiltered, catalog-wide — attractions are grouped by park in the picker below, never filtered
+  // to a single "current" park. Matches the pattern already used by FamilyForm's favorite/disliked
+  // attraction picker.
   const attractionsQuery = useQuery({
-    queryKey: queryKeys.attractions.live(selectedPark),
-    queryFn: () => attractionRepository.getLiveAttractions(selectedPark),
+    queryKey: queryKeys.attractions.all(),
+    queryFn: () => attractionRepository.getAllAttractions(),
   })
+  const groupedAttractions = groupAttractionsByPark(attractionsQuery.data ?? [])
 
   // `keyName` must differ from "id" — DiningReservation/EntertainmentEvent already have their own
   // `id` field, and react-hook-form's default `keyName` ("id") silently overwrites it otherwise.
@@ -137,13 +144,9 @@ export function ParkDayEditorDialog({
     keyName: '_fieldKey',
   })
 
-  function handleDestinationChange(next: DestinationId) {
-    setDestination(next)
-    const availableParks = DESTINATION_PARKS[next]
-    if (!availableParks.includes(form.getValues('park'))) {
-      form.setValue('park', availableParks[0])
-    }
-  }
+  // Derived, not stored — reflects whatever parks the currently-planned attractions actually
+  // belong to, so it's always consistent with the plan and updates live as rows are added/removed.
+  const parksVisited = getParksVisited(form.watch('plannedAttractions'), attractionsQuery.data ?? [])
 
   function handleSubmit(values: ParkDay) {
     onSave({
@@ -170,73 +173,19 @@ export function ParkDayEditorDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        value={isoDateToInputValue(field.value)}
-                        onChange={(e) => field.onChange(inputValueToIsoDate(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid gap-2">
-                <Label>Destination</Label>
-                <Select value={destination} onValueChange={handleDestinationChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(DESTINATION_NAMES).map(([id, name]) => (
-                      <SelectItem key={id} value={id}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
             <FormField
               control={form.control}
-              name="park"
+              name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Park</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    {/* All parks are always rendered here (not filtered by destination) — Radix
-                        Select only registers a SelectItem's display label once it has actually
-                        mounted, so a value whose item was never rendered (e.g. because it belonged
-                        to a destination-filtered-out list) can't be displayed and gets silently
-                        reset. Always mounting every item avoids that; Destination is a "jump to
-                        this resort's first park" convenience, not a hard filter on this list. */}
-                    <SelectContent>
-                      {Object.entries(DESTINATION_PARKS).map(([destId, parks]) => (
-                        <SelectGroup key={destId}>
-                          <SelectLabel>{DESTINATION_NAMES[destId as DestinationId]}</SelectLabel>
-                          {parks.map((park) => (
-                            <SelectItem key={park} value={park}>
-                              {PARK_NAMES[park]}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={isoDateToInputValue(field.value)}
+                      onChange={(e) => field.onChange(inputValueToIsoDate(e.target.value))}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -293,22 +242,20 @@ export function ParkDayEditorDialog({
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Controller
-                control={form.control}
-                name="hasParkHopper"
-                render={({ field }) => (
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} id="hasParkHopper" />
-                )}
-              />
-              <Label htmlFor="hasParkHopper">Park hopper this day</Label>
-            </div>
-
             <Separator />
 
             <section className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Planned Attractions</h3>
+                <div>
+                  <h3 className="text-sm font-semibold">Planned Attractions</h3>
+                  {parksVisited.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      {parksVisited.length > 1
+                        ? `Park Hopping: ${parksVisited.map((p) => PARK_NAMES[p]).join(' + ')}`
+                        : PARK_NAMES[parksVisited[0]]}
+                    </p>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -375,11 +322,21 @@ export function ParkDayEditorDialog({
                         <SelectTrigger className="flex-1">
                           <SelectValue />
                         </SelectTrigger>
+                        {/* Grouped by park, never filtered — every attraction in the catalog is
+                            always mounted (same Radix mount-timing reasoning as the old Park
+                            select: a value whose item never rendered can't display and gets
+                            silently reset). Which park(s) a day belongs to is derived from what's
+                            actually picked here, not chosen up front. */}
                         <SelectContent>
-                          {attractionsQuery.data?.map((a) => (
-                            <SelectItem key={a.id} value={a.id}>
-                              {a.name}
-                            </SelectItem>
+                          {groupedAttractions.map(([park, attractions]) => (
+                            <SelectGroup key={park}>
+                              <SelectLabel>{PARK_NAMES[park]}</SelectLabel>
+                              {attractions.map((a) => (
+                                <SelectItem key={a.id} value={a.id}>
+                                  {a.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
                           ))}
                         </SelectContent>
                       </Select>

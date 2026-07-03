@@ -38,9 +38,12 @@ export function useCommandQueue(): CommandQueueResult {
   const trip = tripQuery.data ?? null
   const parkDay = useMemo(() => (trip ? getTodayParkDay(trip, bucketedNow) : null), [trip, bucketedNow])
 
+  // Catalog-wide, not park-scoped — a day's plannedAttractions can now span multiple parks (park
+  // hopping is derived from what's planned, not a stored single `ParkDay.park`), so the Operations
+  // Engine needs visibility into every park's attractions, not just one.
   const attractionsQuery = useQuery({
-    queryKey: queryKeys.attractions.live(parkDay?.park ?? 'magicKingdom'),
-    queryFn: () => attractionRepository.getLiveAttractions(parkDay!.park),
+    queryKey: queryKeys.attractions.all(),
+    queryFn: () => attractionRepository.getAllAttractions(),
     enabled: parkDay != null,
   })
 

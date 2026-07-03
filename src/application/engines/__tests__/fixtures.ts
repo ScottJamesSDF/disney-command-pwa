@@ -132,14 +132,12 @@ export function makeParkDay(overrides: Partial<ParkDay> = {}): ParkDay {
   return {
     id: nextId('parkday'),
     date: CURRENT_TIME.toISOString(),
-    park: 'magicKingdom',
     parkOpenTime: { hour: 9, minute: 0 },
     parkCloseTime: { hour: 22, minute: 0 },
     arrivalTime: { hour: 9, minute: 0 },
     plannedAttractions: [],
     diningReservations: [],
     entertainment: [],
-    hasParkHopper: false,
     ...overrides,
   }
 }

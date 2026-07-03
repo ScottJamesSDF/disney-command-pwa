@@ -41,15 +41,12 @@ erDiagram
         uuid id PK
         uuid trip_id FK
         date date
-        text park_id
         jsonb park_open_time
         jsonb park_close_time
         jsonb arrival_time
         jsonb planned_attractions
         jsonb dining_reservations
         jsonb entertainment
-        boolean has_park_hopper
-        text evening_park_id
     }
     FAMILIES {
         uuid id PK
@@ -121,6 +118,13 @@ One row per day of a trip. `planned_attractions`, `dining_reservations`, and `en
 in `src/domain/entities/trip.ts` exactly, so the Postgres row deserializes directly into the
 domain type. Indexed on `(trip_id, date)`.
 
+Deliberately **no** `park_id`/`has_park_hopper`/`evening_park_id` columns — which park(s) a day
+touches (and thus whether it's a park-hopping day) is derived by looking up each planned
+attraction's `park_id` in `attractions`, not stored on the day itself. A stored single park with a
+hopper flag couldn't represent hopping without extra state that could drift from what was actually
+planned; deriving it from `planned_attractions` is always consistent. See
+`getParksVisited` in `src/domain/rules/tripRules.ts`.
+
 ### `families`
 One row per family. `members` is a `jsonb` array matching `FamilyMember[]` — the same
 "flat top-level, nested JSON" strategy as `park_days`.
@@ -145,13 +149,12 @@ Only needed if the Supabase phase wants to share a weather cache across users hi
 park coordinates rather than relying on Open-Meteo's own caching + the client-side IndexedDB
 cache. Not required for correctness.
 
-### `Destination` (client-side only, not a table)
-A lightweight UI grouping of `ParkId`s ("Walt Disney World Resort" → magicKingdom/epcot/
-hollywoodStudios/animalKingdom; "Disneyland Resort" → disneyland/californiaAdventure), defined in
-`src/domain/constants/destinations.ts`. It is derivable entirely from `park_id`/`ParkId`, so it is
-intentionally **not** a stored column or FK on `trips`/`park_days` — only used to group the Park
-picker in the Planner UI by resort. If a third resort's parks are added to the catalog later, this
-stays a pure constants-file change.
+### Parks-per-day (client-side only, not a column)
+The Planner's attraction picker shows every seeded attraction grouped by park (via
+`PARK_NAMES`/`SelectGroup`), never filtered to a single "current" park — a day's parks (and
+whether it's hopping) are whatever `getParksVisited` derives from its `planned_attractions`. There
+is no separate "Destination"/resort-grouping concept anymore; it was only used to filter the old
+single-park picker and became dead weight once selection stopped being filtered by park.
 
 ## Row Level Security (RLS)
 

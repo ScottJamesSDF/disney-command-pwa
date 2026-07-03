@@ -1,7 +1,9 @@
+import type { Attraction, ParkId } from '@/domain/entities/attraction'
 import type {
   DiningReservation,
   EntertainmentEvent,
   ParkDay,
+  PlannedAttraction,
   Trip,
 } from '@/domain/entities/trip'
 
@@ -41,6 +43,24 @@ export function hasEnded(trip: Trip, now: Date): boolean {
   const end = new Date(trip.endDate)
   end.setDate(end.getDate() + 1)
   return now.getTime() >= end.getTime()
+}
+
+/**
+ * The distinct parks a day's planned attractions actually belong to, looked up against the
+ * attraction catalog. Replaces a stored `ParkDay.park`/`hasParkHopper` — always consistent with
+ * what's actually planned, and naturally reflects park-hopping (length > 1) with no extra flag.
+ */
+export function getParksVisited(
+  plannedAttractions: PlannedAttraction[],
+  attractions: Attraction[],
+): ParkId[] {
+  const attractionsById = new Map(attractions.map((a) => [a.id, a]))
+  const parks = new Set<ParkId>()
+  for (const planned of plannedAttractions) {
+    const attraction = attractionsById.get(planned.attractionId)
+    if (attraction) parks.add(attraction.park)
+  }
+  return [...parks]
 }
 
 /** Ported from `ParkDay.completedAttractions`. */

@@ -1,26 +1,24 @@
 {
   "id": "trip_demo",
-  "name": "The Johnson Family Magic Kingdom Adventure",
+  "name": "The Johnson Family Disneyland Resort Adventure",
   "startDateOffsetDays": 0,
   "endDateOffsetDays": 3,
   "familyId": "family_johnson",
-  "hotelName": "Disney's Grand Floridian Resort & Spa",
-  "notes": "First Magic Kingdom day of the trip!",
+  "hotelName": "Disney's Grand Californian Hotel & Spa",
+  "notes": "Disneyland + California Adventure hopper day!",
   "isActive": true,
   "createdAt": "2026-01-01T00:00:00.000Z",
   "parkDays": [
     {
       "id": "parkday_today",
       "dateOffsetDays": 0,
-      "park": "magicKingdom",
-      "parkOpenTime": { "hour": 9, "minute": 0 },
+      "parkOpenTime": { "hour": 8, "minute": 0 },
       "parkCloseTime": { "hour": 22, "minute": 0 },
-      "arrivalTime": { "hour": 8, "minute": 45 },
-      "hasParkHopper": false,
+      "arrivalTime": { "hour": 7, "minute": 45 },
       "plannedAttractions": [
         {
-          "attractionId": "seven_dwarfs_mine",
-          "attractionName": "Seven Dwarfs Mine Train",
+          "attractionId": "space_mountain_dl",
+          "attractionName": "Space Mountain",
           "plannedOrder": 0,
           "isCompleted": true,
           "completedMinutesAgo": 90,
@@ -29,7 +27,7 @@
           "isSkipped": false
         },
         {
-          "attractionId": "haunted_mansion",
+          "attractionId": "haunted_mansion_dl",
           "attractionName": "Haunted Mansion",
           "plannedOrder": 1,
           "isCompleted": false,
@@ -37,7 +35,7 @@
           "isSkipped": false
         },
         {
-          "attractionId": "pirates_caribbean",
+          "attractionId": "pirates_caribbean_dl",
           "attractionName": "Pirates of the Caribbean",
           "plannedOrder": 2,
           "isCompleted": false,
@@ -45,7 +43,7 @@
           "isSkipped": false
         },
         {
-          "attractionId": "big_thunder",
+          "attractionId": "big_thunder_dl",
           "attractionName": "Big Thunder Mountain Railroad",
           "plannedOrder": 3,
           "isCompleted": false,
@@ -53,9 +51,17 @@
           "isSkipped": false
         },
         {
-          "attractionId": "space_mountain",
-          "attractionName": "Space Mountain",
+          "attractionId": "radiator_springs_racers",
+          "attractionName": "Radiator Springs Racers",
           "plannedOrder": 4,
+          "isCompleted": false,
+          "usedLightningLane": false,
+          "isSkipped": false
+        },
+        {
+          "attractionId": "guardians_mission_breakout",
+          "attractionName": "Guardians of the Galaxy – Mission: BREAKOUT!",
+          "plannedOrder": 5,
           "isCompleted": false,
           "usedLightningLane": false,
           "isSkipped": false
@@ -63,13 +69,13 @@
       ],
       "diningReservations": [
         {
-          "id": "dining_beog",
-          "restaurantName": "Be Our Guest Restaurant",
-          "restaurantId": "be_our_guest",
+          "id": "dining_blue_bayou",
+          "restaurantName": "Blue Bayou Restaurant",
+          "restaurantId": "blue_bayou",
           "reservationTimeMinutesFromMidnight": 750,
           "partySize": 4,
           "isConfirmed": true,
-          "confirmationNumber": "WDW123456",
+          "confirmationNumber": "DLR123456",
           "isMobileOrder": false,
           "isCompleted": false
         }
@@ -77,20 +83,20 @@
       "entertainment": [
         {
           "id": "ent_parade",
-          "name": "Festival of Fantasy Parade",
+          "name": "Magic Happens Parade",
           "showTimeMinutesFromMidnight": 900,
           "location": "Main Street, U.S.A.",
-          "durationMinutes": 12,
+          "durationMinutes": 20,
           "recommendedArrivalMinutesBefore": 30,
           "isCompleted": false
         },
         {
-          "id": "ent_fireworks",
-          "name": "Happily Ever After",
-          "showTimeMinutesFromMidnight": 1260,
-          "location": "Cinderella Castle Hub",
-          "durationMinutes": 18,
-          "recommendedArrivalMinutesBefore": 20,
+          "id": "ent_world_of_color",
+          "name": "World of Color",
+          "showTimeMinutesFromMidnight": 1290,
+          "location": "Paradise Bay, Disney California Adventure",
+          "durationMinutes": 24,
+          "recommendedArrivalMinutesBefore": 30,
           "isCompleted": false
         }
       ]
