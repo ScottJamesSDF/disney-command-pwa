@@ -10,4 +10,5 @@ export interface TripRepository {
     completedAt: Date,
   ): Promise<void>
   skipAttraction(parkDayId: string, attractionId: string): Promise<void>
+  setAttractionDelay(parkDayId: string, attractionId: string, delayMinutes: number): Promise<void>
 }

@@ -8,6 +8,7 @@ import {
   membersNeedingRest,
 } from '@/domain/rules/familyRules'
 import { minutesUntilDining, minutesUntilEntertainmentArrival } from '@/domain/rules/tripRules'
+import { calibratePace, estimateWalkMinutes } from '@/domain/rules/paceRules'
 import { scoreAttraction } from './scoring'
 
 export interface GenerateCommandQueueInput {
@@ -36,6 +37,23 @@ function remainingPlannedAttractions(parkDay: ParkDay) {
     .sort((a, b) => a.plannedOrder - b.plannedOrder)
 }
 
+function getDelayMinutes(parkDay: ParkDay, attractionId: string): number {
+  return parkDay.plannedAttractions.find((p) => p.attractionId === attractionId)?.delayMinutes ?? 0
+}
+
+/** The most recently completed attraction today, if any — "where the user actually is right now." */
+function mostRecentlyCompletedAttraction(
+  parkDay: ParkDay,
+  liveAttractions: Attraction[],
+): Attraction | null {
+  const completed = parkDay.plannedAttractions
+    .filter((p) => p.isCompleted && p.completedAt)
+    .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
+  const mostRecent = completed[0]
+  if (!mostRecent) return null
+  return findLiveAttraction(liveAttractions, mostRecent.attractionId) ?? null
+}
+
 function attractionSubtext(waitMinutes: number): string {
   if (waitMinutes <= 15) return "Great time to go — it's a great time to go!"
   if (waitMinutes <= 30) return 'Worth the wait.'
@@ -48,21 +66,34 @@ function effectiveWait(attraction: Attraction): { wait: number; usedLightningLan
   return { wait: usedLightningLane ? 5 : attraction.currentWaitMinutes, usedLightningLane }
 }
 
+export interface AttractionCommandContext {
+  /** Wherever the user is walking from — the last completed attraction, or `null` at day-start. */
+  from: Attraction | null
+  /** Calibrated walking pace (minutes per map-unit), or `null` to use the default speed. */
+  minutesPerMapUnit: number | null
+  /** Manually-added delay for this specific attraction, cascading to everything after it. */
+  delayMinutes: number
+}
+
+const NO_CONTEXT: AttractionCommandContext = { from: null, minutesPerMapUnit: null, delayMinutes: 0 }
+
 function buildAttractionCommand(
   attraction: Attraction,
   currentTime: Date,
   priority: NextCommand['priority'],
+  context: AttractionCommandContext = NO_CONTEXT,
   headlinePrefix = 'Walk to',
 ): NextCommand {
   const { wait, usedLightningLane } = effectiveWait(attraction)
-  const totalMinutes = attraction.walkFromHubMinutes + wait + attraction.durationMinutes
+  const walkMinutes = estimateWalkMinutes(context.from, attraction, context.minutesPerMapUnit)
+  const totalMinutes = walkMinutes + wait + attraction.durationMinutes + context.delayMinutes
   return {
     id: crypto.randomUUID(),
     type: 'walkToAttraction',
     priority,
     headline: `${headlinePrefix} ${attraction.name}`,
     subtext: attractionSubtext(wait),
-    walkMinutes: attraction.walkFromHubMinutes,
+    walkMinutes,
     waitMinutes: wait,
     durationMinutes: attraction.durationMinutes,
     estimatedCompletion: new Date(currentTime.getTime() + totalMinutes * 60_000).toISOString(),
@@ -286,11 +317,17 @@ function getNextPlannedAttraction(
   parkDay: ParkDay,
   liveAttractions: Attraction[],
   currentTime: Date,
+  from: Attraction | null = null,
+  minutesPerMapUnit: number | null = null,
 ): NextCommand | null {
   for (const planned of remainingPlannedAttractions(parkDay)) {
     const attraction = findLiveAttraction(liveAttractions, planned.attractionId)
     if (!attraction || !attraction.isOpen) continue
-    return buildAttractionCommand(attraction, currentTime, 'normal')
+    return buildAttractionCommand(attraction, currentTime, 'normal', {
+      from,
+      minutesPerMapUnit,
+      delayMinutes: getDelayMinutes(parkDay, attraction.id),
+    })
   }
   return null
 }
@@ -300,6 +337,8 @@ function findBestAvailableAttraction(
   parkDay: ParkDay,
   family: Family,
   currentTime: Date,
+  from: Attraction | null = null,
+  minutesPerMapUnit: number | null = null,
 ): NextCommand {
   const candidates = liveAttractions.filter(
     (a) => a.isOpen && !isAttractionResolved(parkDay, a.id),
@@ -321,7 +360,13 @@ function findBestAvailableAttraction(
     (a, b) => scoreAttraction(b, family) - scoreAttraction(a, family),
   )[0]
 
-  return buildAttractionCommand(best, currentTime, 'normal', 'Head to')
+  return buildAttractionCommand(
+    best,
+    currentTime,
+    'normal',
+    { from, minutesPerMapUnit, delayMinutes: getDelayMinutes(parkDay, best.id) },
+    'Head to',
+  )
 }
 
 function generateUpcomingCommands(
@@ -330,9 +375,12 @@ function generateUpcomingCommands(
   liveAttractions: Attraction[],
   currentTime: Date,
   excludeAttractionId: string | undefined,
+  from: Attraction | null = null,
+  minutesPerMapUnit: number | null = null,
 ): NextCommand[] {
   const upcoming: NextCommand[] = []
   let cursor = currentTime
+  let cursorFrom = from
   let rideCount = 0
 
   const remaining = remainingPlannedAttractions(parkDay).filter(
@@ -345,9 +393,14 @@ function generateUpcomingCommands(
     const attraction = findLiveAttraction(liveAttractions, planned.attractionId)
     if (!attraction || !attraction.isOpen) continue
 
-    const command = buildAttractionCommand(attraction, cursor, 'normal')
+    const command = buildAttractionCommand(attraction, cursor, 'normal', {
+      from: cursorFrom,
+      minutesPerMapUnit,
+      delayMinutes: getDelayMinutes(parkDay, attraction.id),
+    })
     upcoming.push(command)
     cursor = new Date(command.estimatedCompletion!)
+    cursorFrom = attraction
     rideCount += 1
 
     if (rideCount % HYDRATION_BREAK_EVERY_N_RIDES === 0 && upcoming.length < UPCOMING_QUEUE_LIMIT) {
@@ -381,14 +434,17 @@ function generateUpcomingCommands(
 export function generateCommandQueue(input: GenerateCommandQueueInput): CommandQueue {
   const { parkDay, family, liveAttractions, currentTime } = input
 
+  const minutesPerMapUnit = calibratePace(parkDay, liveAttractions)
+  const lastCompleted = mostRecentlyCompletedAttraction(parkDay, liveAttractions)
+
   const current =
     checkLightningLaneWindow(parkDay, liveAttractions, currentTime) ??
     checkImminentDining(parkDay, currentTime) ??
     checkImminentEntertainment(parkDay, currentTime) ??
     checkFamilyEnergy(family, currentTime) ??
     checkHydration(family, currentTime) ??
-    getNextPlannedAttraction(parkDay, liveAttractions, currentTime) ??
-    findBestAvailableAttraction(liveAttractions, parkDay, family, currentTime)
+    getNextPlannedAttraction(parkDay, liveAttractions, currentTime, lastCompleted, minutesPerMapUnit) ??
+    findBestAvailableAttraction(liveAttractions, parkDay, family, currentTime, lastCompleted, minutesPerMapUnit)
 
   const upcoming = generateUpcomingCommands(
     parkDay,
@@ -396,6 +452,8 @@ export function generateCommandQueue(input: GenerateCommandQueueInput): CommandQ
     liveAttractions,
     currentTime,
     current.attraction?.id,
+    current.attraction ?? lastCompleted,
+    minutesPerMapUnit,
   )
 
   return {

@@ -31,6 +31,8 @@ export const PlannedAttractionSchema = z.object({
   usedLightningLane: z.boolean(),
   actualWaitMinutes: z.number().int().nonnegative().optional(),
   isSkipped: z.boolean(),
+  /** Manually-added minutes (ride broke down, running behind) that push back every later estimate. */
+  delayMinutes: z.number().int().nonnegative().optional(),
 })
 export type PlannedAttraction = z.infer<typeof PlannedAttractionSchema>
 

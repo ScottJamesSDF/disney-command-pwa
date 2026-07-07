@@ -53,7 +53,14 @@ function DashboardContent() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
         <div className="space-y-3 md:col-span-2">
           <LightningLaneCountdown attraction={queue.current.attraction} />
-          <CommandCard command={queue.current} />
+          <CommandCard
+            command={queue.current}
+            parkDayId={parkDay.id}
+            delayMinutes={
+              parkDay.plannedAttractions.find((p) => p.attractionId === queue.current.attraction?.id)
+                ?.delayMinutes ?? 0
+            }
+          />
         </div>
 
         <div className="space-y-4">

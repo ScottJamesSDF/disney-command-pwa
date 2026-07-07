@@ -1,4 +1,5 @@
 import type { ParkId } from '@/domain/entities/attraction'
+import { DEFAULT_MINUTES_PER_MAP_UNIT } from '@/domain/rules/paceRules'
 
 interface HubAnchor {
   mapX: number
@@ -16,7 +17,6 @@ const HUBS: Partial<Record<ParkId, HubAnchor>> = {
 }
 const LAT_SCALE = 0.0045 // degrees latitude per map-unit (north positive)
 const LNG_SCALE = 0.0054 // degrees longitude per map-unit (east positive)
-const MINUTES_PER_UNIT = 26 // walkFromHubMinutes per map-unit distance from hub
 
 export interface DerivedGeo {
   latitude: number
@@ -32,6 +32,6 @@ export function deriveGeo(park: ParkId, mapX: number, mapY: number): DerivedGeo 
   return {
     latitude: Math.round((hub.lat + dy * LAT_SCALE) * 10_000) / 10_000,
     longitude: Math.round((hub.lng + dx * LNG_SCALE) * 10_000) / 10_000,
-    walkFromHubMinutes: Math.max(1, Math.round(dist * MINUTES_PER_UNIT)),
+    walkFromHubMinutes: Math.max(1, Math.round(dist * DEFAULT_MINUTES_PER_MAP_UNIT)),
   }
 }

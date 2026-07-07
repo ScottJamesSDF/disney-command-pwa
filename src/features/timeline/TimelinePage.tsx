@@ -46,7 +46,7 @@ function TimelineContent() {
         {entries.map((entry, index) => (
           <div key={`${entry.type}-${entry.id}`}>
             {index > 0 && <Separator className="my-1" />}
-            <TimelineEntryRow entry={entry} isCurrent={entry === currentEntry} />
+            <TimelineEntryRow entry={entry} isCurrent={entry === currentEntry} parkDayId={parkDay.id} />
           </div>
         ))}
       </CardContent>

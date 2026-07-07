@@ -4,11 +4,14 @@ import type { NextCommand } from '@/domain/entities/command'
 import { formatParkArea } from '@/domain/constants/parks'
 import { cn } from '@/shared/lib/cn'
 import { formatMinutes } from '@/shared/lib/formatTime'
+import { useSetAttractionDelay } from '@/shared/hooks/useSetAttractionDelay'
 import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/shared/components/ui/card'
 import { useCompleteCommand } from '../hooks/useCompleteCommand'
 import { useDashboardStore } from '../dashboard.store'
+
+const DELAY_INCREMENTS = [5, 10, 15]
 
 const PRIORITY_STYLES: Record<NextCommand['priority'], { bar: string; label: string }> = {
   critical: { bar: 'bg-castle-red', label: 'text-castle-red' },
@@ -24,11 +27,30 @@ function waitColor(waitMinutes: number | undefined): string {
   return 'text-status-stop'
 }
 
-export function CommandCard({ command }: { command: NextCommand }) {
+export function CommandCard({
+  command,
+  parkDayId,
+  delayMinutes = 0,
+}: {
+  command: NextCommand
+  parkDayId?: string
+  delayMinutes?: number
+}) {
   const { completeCommand, skipCommand, isPending } = useCompleteCommand()
+  const setDelay = useSetAttractionDelay()
   const optimisticCommandIds = useDashboardStore((state) => state.optimisticCommandIds)
   const isOptimisticallyResolved = optimisticCommandIds.has(command.id)
   const style = PRIORITY_STYLES[command.priority]
+
+  function addDelay(minutes: number) {
+    if (!parkDayId || !command.attraction) return
+    setDelay.mutate({ parkDayId, attractionId: command.attraction.id, delayMinutes: delayMinutes + minutes })
+  }
+
+  function clearDelay() {
+    if (!parkDayId || !command.attraction) return
+    setDelay.mutate({ parkDayId, attractionId: command.attraction.id, delayMinutes: 0 })
+  }
 
   return (
     <motion.div
@@ -128,6 +150,35 @@ export function CommandCard({ command }: { command: NextCommand }) {
                 <SkipForward className="size-4" />
                 Skip
               </Button>
+            </div>
+          )}
+
+          {command.attraction && parkDayId && (
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              {delayMinutes > 0 && <Badge variant="caution">Delayed +{delayMinutes} min</Badge>}
+              {DELAY_INCREMENTS.map((inc) => (
+                <Button
+                  key={inc}
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={setDelay.isPending}
+                  onClick={() => addDelay(inc)}
+                >
+                  +{inc}
+                </Button>
+              ))}
+              {delayMinutes > 0 && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  disabled={setDelay.isPending}
+                  onClick={clearDelay}
+                >
+                  Clear delay
+                </Button>
+              )}
             </div>
           )}
         </CardContent>

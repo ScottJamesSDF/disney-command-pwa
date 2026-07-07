@@ -2,6 +2,7 @@ import type { Attraction } from '@/domain/entities/attraction'
 import { formatParkArea } from '@/domain/constants/parks'
 import type { ParkDay } from '@/domain/entities/trip'
 import { timeOfDayToDate } from '@/domain/entities/trip'
+import { calibratePace, estimateWalkMinutes } from '@/domain/rules/paceRules'
 
 export type TimelineEntryType = 'attraction' | 'dining' | 'entertainment'
 export type TimelineEntryStatus = 'completed' | 'skipped' | 'pending'
@@ -18,6 +19,8 @@ export interface TimelineEntry {
   walkMinutes?: number
   /** Minutes actually spent at the attraction/show once there (ride duration, show length). */
   durationMinutes?: number
+  /** Manually-added delay minutes, for attraction entries — 0 when none has been set. */
+  delayMinutes?: number
 }
 
 /**
@@ -31,14 +34,19 @@ export interface TimelineEntry {
  * estimated time via a running "depart" cursor, starting from `arrivalTime`: each entry's displayed
  * `time` is the moment you'd actually be at/riding it (depart + walk + wait), not when you leave for
  * it, so it reads as "time at ride" rather than "time you start walking." The cursor then advances by
- * that ride's duration for the next stop's depart time. Whenever a real `completedAt` is known, it's
- * used as-is for that entry's time, and the next depart cursor resets there — so later estimates stay
- * anchored to reality as the day actually unfolds instead of drifting from pure estimation.
+ * that ride's duration (plus any manually-added delay) for the next stop's depart time. Whenever a
+ * real `completedAt` is known, it's used as-is for that entry's time, and the next depart cursor
+ * resets there — so later estimates stay anchored to reality as the day actually unfolds instead of
+ * drifting from pure estimation. Walk time between two attractions is always point-to-point (their
+ * actual map positions), using the day's calibrated pace when there's enough real data yet, else a
+ * default walking speed — never hub-distance once there's a previous attraction to walk from.
  */
 export function buildDayTimeline(parkDay: ParkDay, attractions: Attraction[], now: Date): TimelineEntry[] {
   const attractionsById = new Map(attractions.map((a) => [a.id, a]))
   const dayDate = new Date(parkDay.date)
   let departCursor = timeOfDayToDate(parkDay.arrivalTime, dayDate)
+  let previousAttraction: Attraction | null = null
+  const minutesPerMapUnit = calibratePace(parkDay, attractions)
 
   const attractionEntries: TimelineEntry[] = []
   for (const planned of [...parkDay.plannedAttractions].sort((a, b) => a.plannedOrder - b.plannedOrder)) {
@@ -51,9 +59,11 @@ export function buildDayTimeline(parkDay: ParkDay, attractions: Attraction[], no
         ? 'skipped'
         : 'pending'
     const subtitle = formatParkArea(attraction.park, attraction.area)
+    const delayMinutes = planned.delayMinutes ?? 0
 
     if (planned.completedAt) {
       departCursor = new Date(planned.completedAt)
+      previousAttraction = attraction
       attractionEntries.push({
         id: planned.attractionId,
         type: 'attraction',
@@ -64,12 +74,14 @@ export function buildDayTimeline(parkDay: ParkDay, attractions: Attraction[], no
         subtitle,
         walkMinutes: attraction.walkFromHubMinutes,
         durationMinutes: attraction.durationMinutes,
+        delayMinutes,
       })
       continue
     }
 
+    const walkMinutes = estimateWalkMinutes(previousAttraction, attraction, minutesPerMapUnit)
     const arriveTime = new Date(
-      departCursor.getTime() + (attraction.walkFromHubMinutes + attraction.currentWaitMinutes) * 60_000,
+      departCursor.getTime() + (walkMinutes + attraction.currentWaitMinutes) * 60_000,
     )
     attractionEntries.push({
       id: planned.attractionId,
@@ -79,10 +91,12 @@ export function buildDayTimeline(parkDay: ParkDay, attractions: Attraction[], no
       status,
       title: planned.attractionName,
       subtitle,
-      walkMinutes: attraction.walkFromHubMinutes,
+      walkMinutes,
       durationMinutes: attraction.durationMinutes,
+      delayMinutes,
     })
-    departCursor = new Date(arriveTime.getTime() + attraction.durationMinutes * 60_000)
+    departCursor = new Date(arriveTime.getTime() + (attraction.durationMinutes + delayMinutes) * 60_000)
+    previousAttraction = attraction
   }
 
   const diningEntries: TimelineEntry[] = parkDay.diningReservations.map((reservation) => ({

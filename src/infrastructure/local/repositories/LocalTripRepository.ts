@@ -54,6 +54,17 @@ export class LocalTripRepository implements TripRepository {
     }))
   }
 
+  async setAttractionDelay(
+    parkDayId: string,
+    attractionId: string,
+    delayMinutes: number,
+  ): Promise<void> {
+    await this.updatePlannedAttraction(parkDayId, attractionId, (planned) => ({
+      ...planned,
+      delayMinutes,
+    }))
+  }
+
   private async updatePlannedAttraction(
     parkDayId: string,
     attractionId: string,

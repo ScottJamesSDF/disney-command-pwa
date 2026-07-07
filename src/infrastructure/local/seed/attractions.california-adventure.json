@@ -125,7 +125,7 @@
     "longitude": -117.9215,
     "mapX": 0.18,
     "mapY": 0.45,
-    "durationMinutes": 3,
+    "durationMinutes": 2,
     "isOpen": true,
     "tags": [
       "must-do",
@@ -372,7 +372,7 @@
     "longitude": -117.9182,
     "mapX": 0.79,
     "mapY": 0.45,
-    "durationMinutes": 7,
+    "durationMinutes": 9,
     "isOpen": true,
     "tags": [
       "family"

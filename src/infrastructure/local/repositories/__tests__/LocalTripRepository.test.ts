@@ -58,6 +58,16 @@ describe('LocalTripRepository', () => {
     expect(planned?.isSkipped).toBe(true)
   })
 
+  it('sets a planned attraction delay and persists it', async () => {
+    await repository.setAttractionDelay('parkday_today', 'haunted_mansion_dl', 15)
+
+    const trip = await repository.getActiveTrip()
+    const planned = trip?.parkDays[0]?.plannedAttractions.find(
+      (p) => p.attractionId === 'haunted_mansion_dl',
+    )
+    expect(planned?.delayMinutes).toBe(15)
+  })
+
   describe('saveTrip', () => {
     it('persists a new trip so it becomes retrievable via getActiveTrip', async () => {
       await repository.saveTrip(makeTrip())
